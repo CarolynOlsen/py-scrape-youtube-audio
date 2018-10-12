@@ -13,3 +13,11 @@ https://yt-dl.org/
 * Download LIBAV from this link and copy the .exe and all DLL files to
 the location of the youtube-dl.exe:
 http://builds.libav.org/windows/release-gpl/
+
+You also need some initial setup to use the YouTube Data API v3:
+* Install the YouTube Official Python Client Library with
+```pip install --upgrade google-api-python-client```
+* Set up a YouTube API key at:
+https://console.cloud.google.com/
+
+After getting software dependencies and an API key taken care of, we stored our API key in a .env file. Replace the file path in the `load_dotenv()` command to your own .env location in the `download_audio_from_youtube.py` file to run it.
