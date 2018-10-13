@@ -18,3 +18,7 @@ https://console.cloud.google.com/
 3. After getting software dependencies and an API key taken care of, we stored our API key in a .env file. Replace the file path in the `load_dotenv()` command to your own .env location in the `download_audio_from_youtube.py` file to run it.
 
 4. Install Python dependencies with `pip install -r requirements.txt`
+
+## To do
+* Use PyAudioAnalysis to extract features from audio files
+* Use features for classification
