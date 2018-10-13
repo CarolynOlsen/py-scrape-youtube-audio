@@ -63,7 +63,8 @@ def get_popular_youtube_video_urls(api_key, category_id):
     if r.status_code==200:
         data = r.json()
 
-        cols = ['video_id', 'category_id', 'url', 'comment_count', 'view_count', 'favorite_count', 'dislike_count', 'like_count']
+        cols = ['video_id', 'category_id', 'url', 'comment_count', 'view_count'
+            , 'favorite_count', 'dislike_count', 'like_count']
         lst = []
         for item in data['items']:
             video_id = item['id']
@@ -97,17 +98,19 @@ def get_youtube_audio(url, directory):
     :param directory: folder location for audio download save
     :return: file will be saved to directory
     """
+
+    video_id = url.split("?v=", 1)[1]
+
     ydl_opts = {
         'format': 'bestaudio/best',
         'download_archive': 'downloaded_audio.txt',
-        'outtmpl': directory+'%(title)s.%(ext)s',
+        'outtmpl': directory+video_id+'.%(ext)s',
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',
             'preferredquality': '192',
             }]
     }
-
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         ydl.download([url])
 
@@ -125,8 +128,9 @@ for cat in categories['category_id']:
     df = get_popular_youtube_video_urls(YOUTUBE_API, cat)
     video_info = video_info.append(df)
 
+# write video information to file
+video_info.to_csv('downloaded_video_audio.csv')
+
 # for each URL, retrieve audio
 for url in video_info['url']:
     get_youtube_audio(url, 'downloadedaudio/')
-
-get_youtube_audio('https://www.youtube.com/watch?v=hL2u93brqiA', 'downloadedaudio/')
