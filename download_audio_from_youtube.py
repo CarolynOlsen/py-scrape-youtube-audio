@@ -111,8 +111,11 @@ def get_youtube_audio(url, directory):
             'preferredquality': '192',
             }]
     }
-    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        ydl.download([url])
+    try:
+        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([url])
+    except:
+        return None
 
 
 # setup YouTube API call parameters
