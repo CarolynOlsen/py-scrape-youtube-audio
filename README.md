@@ -1,5 +1,5 @@
 # YouTube Audio Analyzer
-[![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/) [![Github all releases](https://img.shields.io/github/downloads/CarolynOlsen/py-youtube-audio-processing.js/total.svg)](https://GitHub.com/CarolynOlsen/py-youtube-audio-processing/releases/) [![GitHub stars](https://img.shields.io/github/stars/CarolynOlsen/py-youtube-audio-processing.svg?style=social&label=Star&maxAge=2592000)](https://GitHub.com/CarolynOlsen/py-youtube-audio-processing/stargazers/)
+[![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/) [![GitHub stars](https://img.shields.io/github/stars/CarolynOlsen/py-youtube-audio-processing.svg?style=social&label=Star&maxAge=2592000)](https://GitHub.com/CarolynOlsen/py-youtube-audio-processing/stargazers/)
 
 ## Purpose
 This project was written to test audio analysis methods in Python. 
