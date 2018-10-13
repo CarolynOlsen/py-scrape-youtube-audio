@@ -1,16 +1,6 @@
 """
 Created 10/11/2018
-
-Use youtube-dl to extract audio from youtube video urls.
-
-Steps for first time youtube-dl setup:
-1. Downloaded youtube-dl from:
-https://yt-dl.org/latest/youtube-dl.exe
-2. Placed youtube-dl.exe in Program Files and added location
-to system PATH environment variable.
-3. Downloaded LIBAV from this link and copied .exe and all DLL files to
-the location of the youtube-dl.exe:
-http://builds.libav.org/windows/release-gpl/
+See README.md for details on dependencies
 """
 
 # import packages
@@ -18,7 +8,84 @@ from __future__ import unicode_literals
 import youtube_dl
 import os
 from dotenv import load_dotenv
+import requests
+import pandas as pd
 
+
+def get_youtube_video_categories(api_key, region):
+    """
+    Get current YouTube video category IDs and descriptions
+
+    :param api_key: YouTube Data v3 API key
+    :param region: String two-character region code, e.g. "US"
+    :return: Data frame of 'category_id' and 'category'
+    """
+
+    r = requests.get('https://www.googleapis.com/youtube/v3/videoCategories'
+                     '?part=snippet&regionCode='+region+
+                     '&key='+api_key)
+    data = r.json()
+
+    cols = ['category_id', 'category']
+    lst = []
+    for item in data['items']:
+        category_id = item['id']
+        category = item['snippet']['title']
+        lst.append([category_id, category])
+    df = pd.DataFrame(lst, columns=cols)
+
+    return df
+
+
+def get_popular_youtube_video_urls(api_key, category_id):
+    """
+    Get URLs and statistics for 50 most popular YouTube videos in a category.
+
+    :param api_key: YouTube Data API v3 key
+    :param category_id: string value for YouTube video category.
+    :return: Pandas Data Frame of
+            'video_id'
+            'url'
+            'comment_count'
+            'view_count'
+            'favorite_count'
+            'dislike_count'
+            'like_count'
+    """
+    r = requests.get('https://www.googleapis.com/youtube/v3/videos'
+                     '?part=snippet%2Cstatistics'
+                     '&chart=mostPopular'
+                     '&maxResults=50'
+                     '&regionCode=US'
+                     '&videoCategoryId=' + category_id +
+                     '&key=' + api_key)
+
+    if r.status_code==200:
+        data = r.json()
+
+        cols = ['video_id', 'category_id', 'url', 'comment_count', 'view_count', 'favorite_count', 'dislike_count', 'like_count']
+        lst = []
+        for item in data['items']:
+            video_id = item['id']
+            url = 'https://www.youtube.com/watch?v='+video_id
+            view_count = item['statistics']['viewCount']
+            favorite_count = item['statistics']['favoriteCount']
+            try:
+                comment_count = item['statistics']['commentCount']
+                dislike_count = item['statistics']['dislikeCount']
+                like_count = item['statistics']['likeCount']
+            except KeyError:
+                comment_count = None
+                dislike_count = None
+                like_count = None
+            lst.append([video_id, category_id, url, comment_count, view_count, favorite_count, dislike_count, like_count])
+        df = pd.DataFrame(lst, columns=cols)
+
+        print('Success: Video info captures for category '+category_id)
+
+        return df
+    else:
+        print('Error: API call failed for category '+category_id+', skipping')
 
 
 def get_youtube_audio(url, directory):
@@ -46,35 +113,20 @@ def get_youtube_audio(url, directory):
 
 
 # setup YouTube API call parameters
-load_dotenv(dotenv_path="C:/Users/Carolyn/.env")
+load_dotenv("C:/Users/Carolyn/.env")
 YOUTUBE_API = os.getenv('YOUTUBE_API')
-YOUTUBE_API_SERVICE_NAME = "youtube"
-YOUTUBE_API_VERSION = "v3"
 
-# define arguments for YouTube API calls
-argparser.add_argument("--q", help="Search term", default="ALS Ice Bucket Challenge")
-argparser.add_argument("--max-results", help="Max results", default=25)
-args = argparser.parse_args()
-options = args
+# get YouTube video categories for the US
+categories = get_youtube_video_categories(YOUTUBE_API, 'US')
 
-def playlists_list_by_channel_id(client, **kwargs):
-  # See full sample for function
-  kwargs = remove_empty_kwargs(**kwargs)
+# for each category, retrieve list of URLs using YouTube API
+video_info = pd.DataFrame([])
+for cat in categories['category_id']:
+    df = get_popular_youtube_video_urls(YOUTUBE_API, cat)
+    video_info = video_info.append(df)
 
-  response = client.playlists().list(
-    **kwargs
-  ).execute()
+# for each URL, retrieve audio
+for url in video_info['url']:
+    get_youtube_audio(url, 'downloadedaudio/')
 
-  return print_response(response)
-
-urls = playlists_list_by_channel_id(client,
-        part='full sample,contentDetails',
-        channelId='UCYfdidRxbB8Qhf0Nx7ioOYw',
-        maxResults=25)
-
-
-# get list of URLs for a channel
-urls = get_video_urls_from_channel('UCYfdidRxbB8Qhf0Nx7ioOYw')
-
-# download audio
 get_youtube_audio('https://www.youtube.com/watch?v=hL2u93brqiA', 'downloadedaudio/')
