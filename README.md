@@ -4,7 +4,7 @@
 ## Purpose
 This project was written to test audio analysis methods in Python. 
 To create data to work with, it starts by scraping the audio from YouTube videos.
-This is a CURRENTLY INCOMPLETE WORK IN PROGRESS.
+This is a work in progress. At this point, we can scrape audio from the most popular videos in different YouTube video categories. Audio mining yet to be completed.
 
 ## First time setup 
 1. The Python package used to scrape audio from YouTube videos (`youtube-dl`) has software dependencies. We used these steps to get set up:
