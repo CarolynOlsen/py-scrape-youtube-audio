@@ -15,8 +15,6 @@ the location of the youtube-dl.exe:
 http://builds.libav.org/windows/release-gpl/
 
 You also need some initial setup to use the YouTube Data API v3:
-* Install the YouTube Official Python Client Library with
-```pip install --upgrade google-api-python-client```
 * Set up a YouTube API key at:
 https://console.cloud.google.com/
 
